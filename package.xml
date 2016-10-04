@@ -1,0 +1,12 @@
+<package>
+  <name>skin_detector_node</name>
+  <version>1.0.0</version>
+  <description>
+  Simple ROS node to detect areas of the RGB video that appear to contain skin. Based on the cod of http://www.pyimagesearch.com/2014/08/18/skin-detection-step-step-example-using-python-opencv/
+  </description>
+  <maintainer email="rmartinmar@gmail.com">Roberto Martin Martin</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+</package>
