@@ -1,36 +1,11 @@
 #!/usr/bin/python
 
 import numpy as np
-import argparse
-import scipy
 import rospy
-from scipy.linalg import *
-import sensor_msgs.point_cloud2 as pcl2
-from geometry_msgs.msg import Point
-from sensor_msgs.msg import PointCloud2
-from sensor_msgs.msg import PointField
-import std_msgs.msg
-from roslib import message
-import sensor_msgs.point_cloud2
-from std_msgs.msg import String
-from std_msgs.msg import Header
-from geometry_msgs.msg import Point
-from sensor_msgs.msg import PointCloud2, PointField
-import geometry_msgs.msg
-import math
-import PyKDL
-import time
-from time import sleep
-import time
-import math
-import tf
-import rospkg
 import os
 
 from sensor_msgs.msg import Image
 import cv2
-from std_msgs.msg import Float64
-import tf
 from cv_bridge import CvBridge, CvBridgeError
 
 lower = np.array([0, 48, 80], dtype = "uint8")
@@ -53,6 +28,9 @@ class SkinDetectorNode:
         
         self.skin_msk_img = Image()
         
+        self.skin_lower = np.array([0, 48, 80], dtype = "uint8")
+        self.skin_upper = np.array([20, 255, 255], dtype = "uint8")
+        
 
     def __enter__(self):
         return self
@@ -68,7 +46,7 @@ class SkinDetectorNode:
             print(e)
             
         self.curr_hsv_img = cv2.cvtColor(self.curr_rgb_img, cv2.COLOR_BGR2HSV)
-        skin_msk = cv2.inRange(self.curr_hsv_img, lower, upper)
+        skin_msk = cv2.inRange(self.curr_hsv_img, self.skin_lower, self.skin_upper)
 
         # apply a series of erosions and dilations to the mask
         # using an elliptical kernel
