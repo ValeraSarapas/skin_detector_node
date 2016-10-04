@@ -51,6 +51,8 @@ class SkinDetectorNode:
 
         self.skin_msk_pub = rospy.Publisher('/skin', Image, queue_size=10)
         
+        self.skin_msk_img = Image()
+        
 
     def __enter__(self):
         return self
@@ -61,7 +63,7 @@ class SkinDetectorNode:
     def rgb_image_cb(self, rgb_img):
         #rospy.loginfo("SkinDetectorNode: Received RGB image")
         try:
-            self.curr_rgb_img = self.bridge.imgmsg_to_cv2(rgb_img, "bgr8")            
+            self.curr_rgb_img = self.bridge.imgmsg_to_cv2(rgb_img, "bgr8")
         except CvBridgeError as e:
             print(e)
             
@@ -79,9 +81,9 @@ class SkinDetectorNode:
         skin_msk = cv2.GaussianBlur(skin_msk, (3, 3), 0)
         
         #### Create Image ####
-        camera_img = self.bridge.cv2_to_imgmsg(skin_msk, "8UC1")
-        
-        self.skin_msk_pub.publish(camera_img)
+        self.skin_msk_img = self.bridge.cv2_to_imgmsg(skin_msk, "8UC1")
+       
+        self.skin_msk_pub.publish(self.skin_msk_img)
 
 def main():
     rospy.init_node('skin_detector_node')
