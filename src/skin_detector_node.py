@@ -28,7 +28,7 @@ class SkinDetectorNode:
         
         self.skin_msk_img = Image()
         
-        self.skin_lower = np.array([130, 0, 0], dtype = "uint8")
+        self.skin_lower = np.array([130, 10, 10], dtype = "uint8")
         self.skin_upper = np.array([180, 255, 255], dtype = "uint8")
         
 
