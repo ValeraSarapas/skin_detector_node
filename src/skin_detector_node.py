@@ -24,12 +24,12 @@ class SkinDetectorNode:
 
         self.bridge = CvBridge()
 
-        self.skin_msk_pub = rospy.Publisher('/skin', Image, queue_size=10)
+        self.skin_msk_pub = rospy.Publisher('/camera/rgb/image_rect_colorsub', Image, queue_size=10)
         
         self.skin_msk_img = Image()
         
-        self.skin_lower = np.array([0, 48, 80], dtype = "uint8")
-        self.skin_upper = np.array([20, 255, 255], dtype = "uint8")
+        self.skin_lower = np.array([130, 0, 0], dtype = "uint8")
+        self.skin_upper = np.array([180, 255, 255], dtype = "uint8")
         
 
     def __enter__(self):
@@ -50,16 +50,26 @@ class SkinDetectorNode:
 
         # apply a series of erosions and dilations to the mask
         # using an elliptical kernel
-        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 11))
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+        
         skin_msk = cv2.erode(skin_msk, kernel, iterations = 2)
+        
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (7, 7))
+        #Connect regions
         skin_msk = cv2.dilate(skin_msk, kernel, iterations = 2)
+        
+        #Remove regions
+        skin_msk = cv2.erode(skin_msk, kernel, iterations = 3)
+        
+        #Enlarge regions
+        skin_msk = cv2.dilate(skin_msk, kernel, iterations = 9)
         
         # blur the mask to help remove noise, then apply the
         # mask to the frame
         skin_msk = cv2.GaussianBlur(skin_msk, (3, 3), 0)
         
         #### Create Image ####
-        self.skin_msk_img = self.bridge.cv2_to_imgmsg(skin_msk, "8UC1")
+        self.skin_msk_img = self.bridge.cv2_to_imgmsg(skin_msk, "mono8")
        
         self.skin_msk_pub.publish(self.skin_msk_img)
 
